@@ -1,0 +1,6 @@
+{
+  "name": "Aura & Roast - Aesthetic Artisan Cafe & Kitchen",
+  "description": "Artisan cafe, specialty coffee, bakery, wood-fired pizzas, gourmet burgers and handmade pastas with live delivery tracking, table reservations, and loyalty rewards.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
