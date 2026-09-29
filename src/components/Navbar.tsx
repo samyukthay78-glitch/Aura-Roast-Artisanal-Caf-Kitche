@@ -10,6 +10,7 @@ interface NavbarProps {
   onOpenCart: () => void;
   onOpenLoyalty: () => void;
   onOpenOffers: () => void;
+  onOpenDifferenceGuide?: () => void;
   activeOrderCount: number;
 }
 
@@ -21,6 +22,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenCart,
   onOpenLoyalty,
   onOpenOffers,
+  onOpenDifferenceGuide,
   activeOrderCount,
 }) => {
   const totalItemsCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
@@ -87,6 +89,16 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </span>
               )}
             </button>
+
+            {onOpenDifferenceGuide && (
+              <button
+                onClick={onOpenDifferenceGuide}
+                className="flex items-center gap-1.5 text-amber-900 font-semibold bg-amber-50 border border-amber-200/80 px-2.5 py-1 rounded-lg hover:bg-amber-100 transition-colors cursor-pointer text-xs"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-amber-700" />
+                <span>Dish Differences Guide</span>
+              </button>
+            )}
 
             <button
               onClick={onOpenOffers}

@@ -10,6 +10,7 @@ import { DeliveryTracker } from './components/DeliveryTracker';
 import { TableReservationModal } from './components/TableReservationModal';
 import { LoyaltyRewardsModal } from './components/LoyaltyRewardsModal';
 import { OffersDrawer } from './components/OffersDrawer';
+import { DishDifferenceGuide } from './components/DishDifferenceGuide';
 import { Footer } from './components/Footer';
 
 import { 
@@ -123,6 +124,8 @@ export default function App() {
   const [isReservationOpen, setIsReservationOpen] = useState(false);
   const [isLoyaltyOpen, setIsLoyaltyOpen] = useState(false);
   const [isOffersOpen, setIsOffersOpen] = useState(false);
+  const [isDifferenceGuideOpen, setIsDifferenceGuideOpen] = useState(false);
+  const [differenceGuideTopic, setDifferenceGuideTopic] = useState<'coffee' | 'pizza' | 'burger'>('coffee');
 
   // Notification toast
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -296,6 +299,10 @@ export default function App() {
         onOpenCart={() => setIsCartOpen(true)}
         onOpenLoyalty={() => setIsLoyaltyOpen(true)}
         onOpenOffers={() => setIsOffersOpen(true)}
+        onOpenDifferenceGuide={() => {
+          setDifferenceGuideTopic('coffee');
+          setIsDifferenceGuideOpen(true);
+        }}
         activeOrderCount={orders.filter((o) => o.status !== 'delivered').length}
       />
 
@@ -316,6 +323,10 @@ export default function App() {
               items={MENU_ITEMS}
               onSelectItem={(item) => setCustomizingItem(item)}
               onQuickAdd={handleQuickAdd}
+              onOpenDifferenceGuide={(topic) => {
+                setDifferenceGuideTopic(topic || 'coffee');
+                setIsDifferenceGuideOpen(true);
+              }}
             />
           </>
         )}
@@ -472,6 +483,14 @@ export default function App() {
         onClose={() => setIsOffersOpen(false)}
         onApplyOffer={handleApplyPromo}
         appliedCode={appliedPromo}
+      />
+
+      {/* Dish & Drink Difference Comparison Guide Modal */}
+      <DishDifferenceGuide
+        isOpen={isDifferenceGuideOpen}
+        onClose={() => setIsDifferenceGuideOpen(false)}
+        onSelectItem={(item) => setCustomizingItem(item)}
+        initialTopic={differenceGuideTopic}
       />
 
       {/* Toast Notification */}

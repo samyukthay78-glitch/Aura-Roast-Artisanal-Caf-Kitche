@@ -29,6 +29,15 @@ export interface MenuItem {
   reviewsCount: number;
   image: string;
   customizationGroups?: CustomizationOptionGroup[];
+  differenceExplainer?: {
+    differsFrom: string; // e.g. "vs Cappuccino" or "vs Chicken Pizza"
+    explanation: string;
+  };
+  composition?: {
+    layers: { name: string; percentage: number; color: string }[];
+    notes: string;
+  };
+  flavorTags?: string[];
 }
 
 export interface SelectedOption {

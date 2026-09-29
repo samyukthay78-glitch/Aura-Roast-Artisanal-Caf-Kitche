@@ -1,17 +1,19 @@
 import React, { useState, useMemo } from 'react';
-import { Search, SlidersHorizontal, Plus, Sparkles, Flame, Check } from 'lucide-react';
+import { Search, SlidersHorizontal, Plus, Sparkles, Flame, Check, HelpCircle, ArrowRight } from 'lucide-react';
 import { MenuItem, DietaryType } from '../types/cafe';
 
 interface MenuSectionProps {
   items: MenuItem[];
   onSelectItem: (item: MenuItem) => void;
   onQuickAdd: (item: MenuItem) => void;
+  onOpenDifferenceGuide: (topic?: 'coffee' | 'pizza' | 'burger') => void;
 }
 
 export const MenuSection: React.FC<MenuSectionProps> = ({
   items,
   onSelectItem,
   onQuickAdd,
+  onOpenDifferenceGuide,
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -21,12 +23,10 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
   const categories = [
     { id: 'all', label: 'All Menu' },
     { id: 'coffee', label: 'Specialty Coffee' },
-    { id: 'bakery', label: 'Bakery & Viennoiserie' },
     { id: 'pizza', label: 'Wood-Fired Pizza' },
     { id: 'burger', label: 'Gourmet Burgers' },
+    { id: 'bakery', label: 'Bakery & Viennoiserie' },
     { id: 'pasta', label: 'Handmade Pasta' },
-    { id: 'drinks', label: 'Coolers & Drinks' },
-    { id: 'desserts', label: 'Desserts' },
   ];
 
   // Filtering and sorting logic
@@ -41,7 +41,7 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
         if (dietaryFilter !== 'all' && item.dietary !== dietaryFilter) {
           return false;
         }
-        // Search query (search in English, Telugu name, and description)
+        // Search query
         if (searchQuery.trim()) {
           const query = searchQuery.toLowerCase();
           const matchName = item.name.toLowerCase().includes(query);
@@ -58,7 +58,6 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
         if (sortBy === 'price-asc') return a.price - b.price;
         if (sortBy === 'price-desc') return b.price - a.price;
         if (sortBy === 'rating') return b.rating - a.rating;
-        // Default recommended: Chef's signature & bestsellers first
         return (b.reviewsCount || 0) - (a.reviewsCount || 0);
       });
   }, [items, selectedCategory, dietaryFilter, searchQuery, sortBy]);
@@ -77,13 +76,54 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
           </h2>
           <p className="text-stone-600 text-sm mt-1 max-w-xl">
             From single-estate coffees to slow-fermented wood-fired crusts, smash burgers, and fresh pasta. 
-            All dishes prepared fresh to order.
+            Every dish has its own authentic recipe, distinct look, and sensory ratio.
           </p>
         </div>
 
         {/* Quick stat */}
         <div className="text-xs text-stone-500 font-medium">
           Showing <span className="font-mono tabular-nums font-bold text-stone-900">{filteredItems.length}</span> curated items
+        </div>
+      </div>
+
+      {/* Interactive "What's the Difference?" Educational Guide Banner */}
+      <div className="mb-8 p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-[#2C1D17] to-[#1C120E] text-white flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-md border border-amber-900/40">
+        <div className="flex items-start gap-3">
+          <div className="p-2 rounded-xl bg-amber-500/20 text-amber-300 shrink-0 mt-0.5">
+            <HelpCircle className="w-5 h-5" />
+          </div>
+          <div>
+            <h3 className="font-serif-display text-base sm:text-lg font-bold text-amber-200">
+              Not sure about the difference between items?
+            </h3>
+            <p className="text-xs text-stone-300 max-w-xl mt-0.5 leading-relaxed">
+              Wondering how a <strong>Café Latte</strong> differs from a <strong>Cappuccino</strong>? 
+              Or how our <strong>Paneer Tikka Pizza</strong> compares to the <strong>Smoked Chicken Pizza</strong>? 
+              Explore our chef's visual comparison guide with milk ratios and ingredient breakdowns.
+            </p>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2 shrink-0">
+          <button
+            onClick={() => onOpenDifferenceGuide('coffee')}
+            className="px-3 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border border-amber-500/30 text-xs font-semibold transition-colors cursor-pointer"
+          >
+            ☕ Latte vs Cappuccino
+          </button>
+          <button
+            onClick={() => onOpenDifferenceGuide('pizza')}
+            className="px-3 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border border-amber-500/30 text-xs font-semibold transition-colors cursor-pointer"
+          >
+            🍕 Paneer vs Chicken Pizza
+          </button>
+          <button
+            onClick={() => onOpenDifferenceGuide('burger')}
+            className="px-3.5 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold transition-all shadow-xs flex items-center gap-1 cursor-pointer"
+          >
+            <span>Full Guide</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </button>
         </div>
       </div>
 
@@ -123,7 +163,7 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
           {searchQuery && (
             <button
               onClick={() => setSearchQuery('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-stone-400 hover:text-stone-600"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-stone-400 hover:text-stone-600 cursor-pointer"
             >
               Clear
             </button>
@@ -176,7 +216,7 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
           </button>
         </div>
 
-        {/* Price Sorting Selector (Lower to Higher / Higher to Lower requested by user) */}
+        {/* Price Sorting Selector */}
         <div className="flex items-center gap-2">
           <SlidersHorizontal className="w-3.5 h-3.5 text-stone-500 shrink-0" />
           <select
@@ -215,9 +255,9 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
           {filteredItems.map((item) => (
             <article
               key={item.id}
-              className="group bg-white rounded-2xl border border-stone-200/90 overflow-hidden flex flex-col hover:border-amber-700/40 hover:shadow-md transition-all duration-200"
+              className="group bg-white rounded-2xl border border-stone-200/90 overflow-hidden flex flex-col hover:border-amber-700/40 hover:shadow-lg transition-all duration-200"
             >
-              {/* Product Image (Takes 65-70% visual presence of top portion) */}
+              {/* Product Image */}
               <div
                 onClick={() => onSelectItem(item)}
                 className="relative aspect-[4/3] bg-stone-100 overflow-hidden cursor-pointer"
@@ -226,15 +266,15 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
                   src={item.image}
                   alt={item.name}
                   referrerPolicy="no-referrer"
-                  className="w-full h-full object-cover object-center group-hover:scale-103 transition-transform duration-300"
+                  className="w-full h-full object-cover object-center group-hover:scale-104 transition-transform duration-300"
                 />
                 
                 {/* Visual Scrim for Text/Badges */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20 opacity-70" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-black/20 opacity-80" />
 
-                {/* Tempting Food Tag (Zero pill clutter - unboxed sleek label) */}
+                {/* Tempting Food Tag */}
                 {item.tag && (
-                  <div className="absolute top-3 left-3 bg-stone-900/80 backdrop-blur-xs text-amber-300 px-2.5 py-1 rounded-md text-[11px] font-bold tracking-wide shadow-xs">
+                  <div className="absolute top-3 left-3 bg-stone-900/85 backdrop-blur-xs text-amber-300 px-2.5 py-1 rounded-md text-[11px] font-bold tracking-wide shadow-xs">
                     {item.tag}
                   </div>
                 )}
@@ -242,12 +282,12 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
                 {/* Dietary Symbol & Prep Time */}
                 <div className="absolute bottom-3 left-3 flex items-center gap-2 text-white text-xs">
                   <span
-                    className={`w-3.5 h-3.5 rounded-sm flex items-center justify-center border ${
+                    className={`w-4 h-4 rounded-sm flex items-center justify-center border ${
                       item.dietary === 'veg'
-                        ? 'border-emerald-400 bg-emerald-950/70'
+                        ? 'border-emerald-400 bg-emerald-950/80'
                         : item.dietary === 'vegan'
-                        ? 'border-green-400 bg-green-950/70'
-                        : 'border-rose-400 bg-rose-950/70'
+                        ? 'border-green-400 bg-green-950/80'
+                        : 'border-rose-400 bg-rose-950/80'
                     }`}
                     title={item.dietary}
                   >
@@ -261,12 +301,12 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
                       }`}
                     />
                   </span>
-                  <span className="text-[11px] font-medium text-stone-200 drop-shadow-xs">
+                  <span className="text-[11px] font-semibold text-stone-100 drop-shadow-xs">
                     {item.prepTime}
                   </span>
                 </div>
 
-                <div className="absolute bottom-3 right-3 text-amber-300 text-xs font-semibold drop-shadow-xs">
+                <div className="absolute bottom-3 right-3 text-amber-300 text-xs font-semibold drop-shadow-xs bg-black/40 px-2 py-0.5 rounded backdrop-blur-xs">
                   ⭐ {item.rating}
                 </div>
               </div>
@@ -275,7 +315,7 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
               <div className="p-5 flex-1 flex flex-col justify-between">
                 
                 <div>
-                  {/* Clean unboxed metadata with typographic separators */}
+                  {/* Clean metadata */}
                   <div className="flex items-center gap-2 text-xs text-stone-500 mb-1.5">
                     <span className="font-semibold text-stone-700">{item.categoryLabel}</span>
                     <span aria-hidden="true">·</span>
@@ -296,9 +336,62 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
                   )}
 
                   {/* Description */}
-                  <p className="text-xs text-stone-600 line-clamp-2 leading-relaxed mb-4">
+                  <p className="text-xs text-stone-600 line-clamp-2 leading-relaxed mb-3">
                     {item.description}
                   </p>
+
+                  {/* DISTINCTIVE CALLOUT: What makes it different? */}
+                  {item.differenceExplainer && (
+                    <div className="mb-3 p-2.5 bg-amber-50/80 border border-amber-200/70 rounded-xl text-[11px] leading-relaxed text-amber-950">
+                      <div className="flex items-center justify-between mb-0.5">
+                        <span className="font-bold text-amber-900 text-[10px] uppercase tracking-wider">
+                          {item.differenceExplainer.differsFrom}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const topic = item.category === 'coffee' ? 'coffee' : item.category === 'pizza' ? 'pizza' : 'burger';
+                            onOpenDifferenceGuide(topic);
+                          }}
+                          className="text-[10px] text-amber-800 hover:text-amber-950 font-semibold underline cursor-pointer"
+                        >
+                          Compare →
+                        </button>
+                      </div>
+                      <p>{item.differenceExplainer.explanation}</p>
+                    </div>
+                  )}
+
+                  {/* Visual Composition Ratio bar (For Coffees) */}
+                  {item.composition && (
+                    <div className="mb-3">
+                      <div className="h-2 w-full rounded-full overflow-hidden flex bg-stone-100 shadow-inner">
+                        {item.composition.layers.map((layer, i) => (
+                          <div
+                            key={i}
+                            style={{ width: `${layer.percentage}%`, backgroundColor: layer.color }}
+                            title={`${layer.name}: ${layer.percentage}%`}
+                          />
+                        ))}
+                      </div>
+                      <div className="flex justify-between text-[9px] text-stone-400 mt-1 font-mono">
+                        {item.composition.layers.map((layer, i) => (
+                          <span key={i}>{layer.name} ({layer.percentage}%)</span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Flavor Tags */}
+                  {item.flavorTags && (
+                    <div className="flex flex-wrap gap-1 mb-4">
+                      {item.flavorTags.slice(0, 3).map((tag, i) => (
+                        <span key={i} className="text-[10px] bg-stone-100 text-stone-600 px-2 py-0.5 rounded">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 {/* Price and Action Button */}

@@ -148,9 +148,42 @@ export const ItemCustomizerModal: React.FC<ItemCustomizerModalProps> = ({
               <span aria-hidden="true">·</span>
               <span>⭐ {item.rating} ({item.reviewsCount})</span>
             </div>
-            <p className="text-sm text-stone-600 leading-relaxed">
+            <p className="text-sm text-stone-600 leading-relaxed mb-3">
               {item.description}
             </p>
+
+            {/* Difference Explainer Callout */}
+            {item.differenceExplainer && (
+              <div className="p-3 bg-amber-50/90 border border-amber-200 rounded-xl text-xs text-amber-950 mb-3">
+                <span className="font-bold text-amber-900 block mb-0.5">
+                  🔍 {item.differenceExplainer.differsFrom}:
+                </span>
+                <p>{item.differenceExplainer.explanation}</p>
+              </div>
+            )}
+
+            {/* Cup Composition Bar */}
+            {item.composition && (
+              <div className="p-3 bg-stone-100 rounded-xl border border-stone-200 space-y-1.5 mb-2">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-stone-600 block">
+                  Drink Composition & Texture
+                </span>
+                <div className="h-4 w-full rounded-md overflow-hidden flex shadow-inner">
+                  {item.composition.layers.map((l, i) => (
+                    <div
+                      key={i}
+                      style={{ width: `${l.percentage}%`, backgroundColor: l.color }}
+                      title={`${l.name}: ${l.percentage}%`}
+                    />
+                  ))}
+                </div>
+                <div className="flex justify-between text-[10px] text-stone-500 font-mono">
+                  {item.composition.layers.map((l, i) => (
+                    <span key={i}>{l.name} ({l.percentage}%)</span>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Customization Options */}
